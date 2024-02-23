@@ -94,6 +94,9 @@ class DChartComboT extends StatelessWidget {
   /// default: false
   final bool allowSliding;
 
+  /// get selected data
+  final void Function(List<TimeData> selected)? onSelection;
+
   /// Numeric Combo Chart\
   /// also can use for single other type but cannot be set horizontal measure
   /// - only bar
@@ -120,6 +123,7 @@ class DChartComboT extends StatelessWidget {
     this.flipVertical = false,
     this.layoutMargin,
     this.allowSliding = false,
+    this.onSelection,
   });
 
   @override
@@ -236,6 +240,21 @@ class DChartComboT extends StatelessWidget {
         if (allowSliding) charts.PanAndZoomBehavior(),
         // charts.PanBehavior(),
       ],
+      selectionModels: [
+        charts.SelectionModelConfig(
+          updatedListener: (charts.SelectionModel model) {
+            if (model.hasDatumSelection) {
+              if (onSelection != null) {
+                onSelection!(model.selectedDatum
+                    .map((e) => TimeData(
+                        domain: e.datum.domain, measure: e.datum.measure))
+                    .toList());
+              }
+            }
+          },
+        ),
+      ],
+
       // behaviors: [
       //   charts.RangeAnnotation([
       //     for (var group in groupList)
